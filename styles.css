@@ -135,8 +135,6 @@ th {
     color: white;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
+td {
+    background-color: #f9f9f9;
 }

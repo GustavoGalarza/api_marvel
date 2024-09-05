@@ -6,143 +6,26 @@
     <title>Búsqueda de Personajes de Marvel</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script type="module" src="app.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Búsqueda de Personajes de Marvel</h1>
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Ingresa el nombre del personaje" oninput="fetchSuggestions()">
-            <select id="suggestions" onchange="selectCharacter()">
+            <input type="text" id="searchInput" placeholder="Ingresa el nombre del personaje">
+            <select id="suggestions">
                 <option value="">---</option>
             </select>
-            <button onclick="searchCharacter()">Buscar</button>
+            <button id="searchButton">Buscar</button>
         </div>
     </div>
 
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" id="closeModal">&times;</span>
             <div id="results"></div>
         </div>
     </div>
-
-    <script>
-        const publicKey = '7a6efc35849d7147226b23231e122ee6';
-        const privateKey = '2840c0c7cb130f914f13b3e93e83f7b0aebeccc4';
-        const baseUrl = `https://gateway.marvel.com:443/v1/public/characters`;
-
-        async function fetchSuggestions() {
-            const query = document.getElementById('searchInput').value;
-            const ts = Date.now(); 
-            const hash = CryptoJS.MD5(ts + privateKey + publicKey).toString();
-            const url = `${baseUrl}?nameStartsWith=${query}&ts=${ts}&apikey=${publicKey}&hash=${hash}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                const select = document.getElementById('suggestions');
-                select.innerHTML = '<option value="">Quizas quisiste decir</option>';
-
-                if (data.data && data.data.results.length > 0) {
-                    data.data.results.forEach(character => {
-                        const option = document.createElement('option');
-                        option.value = character.id;
-                        option.textContent = character.name;
-                        select.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error al obtener sugerencias:', error);
-            }
-        }
-
-        async function searchCharacter() {
-            const characterName = document.getElementById('searchInput').value;
-            const characterId = document.getElementById('suggestions').value;
-            const ts = Date.now(); 
-            const hash = CryptoJS.MD5(ts + privateKey + publicKey).toString();
-            let url = '';
-
-            if (characterId) {
-                url = `${baseUrl}/${characterId}?ts=${ts}&apikey=${publicKey}&hash=${hash}`;
-            } else if (characterName) {
-                url = `${baseUrl}?name=${characterName}&ts=${ts}&apikey=${publicKey}&hash=${hash}`;
-            } else {
-                alert('Por favor ingresa un nombre o selecciona un personaje para la busqueda.');
-                return;
-            }
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.data && data.data.results.length > 0) {
-                    const character = data.data.results[0];
-
-                    
-                    const comics = character.comics.items.map(comic => comic.name).slice(0, 5).join(", ");
-                    const series = character.series.items.map(serie => serie.name).slice(0, 5).join(", ");
-                    const events = character.events.items.map(event => event.name).slice(0, 5).join(", ");
-                    const stories = character.stories.items.map(story => story.name).slice(0, 5).join(", ");
-
-                
-                    const characterInfo = `
-                        <div class="character-profile">
-                            <div class="character-image">
-                                <img src="${character.thumbnail.path}.${character.thumbnail.extension}" alt="${character.name}">
-                            </div>
-                            <div class="character-details">
-                                <h2>${character.name}</h2>
-                                <p>${character.description || "No hay descripción disponible."}</p>
-                            </div>
-                        </div>
-                        <table>
-                            <tr>
-                                <th colspan="2">Datos Adicionales</th>
-                            </tr>
-                            <tr>
-                                <td><strong>Cómics</strong></td>
-                                <td>${comics || "No hay cómics disponibles."}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Series</strong></td>
-                                <td>${series || "No hay series disponibles."}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Eventos</strong></td>
-                                <td>${events || "No hay eventos disponibles."}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Historias</strong></td>
-                                <td>${stories || "No hay historias disponibles."}</td>
-                            </tr>
-                        </table>
-                    `;
-                    document.getElementById('results').innerHTML = characterInfo;
-                    document.getElementById('modal').style.display = 'block';
-                } else {
-                    document.getElementById('results').innerHTML = 'Personaje no encontrado.';
-                    document.getElementById('modal').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error al obtener los datos:', error);
-                document.getElementById('results').innerHTML = 'Error en la búsqueda.';
-                document.getElementById('modal').style.display = 'block';
-            }
-        }
-
-        function selectCharacter() {
-            const characterId = document.getElementById('suggestions').value;
-            if (characterId) {
-                searchCharacter();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-    </script>
 </body>
 </html>
