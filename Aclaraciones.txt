@@ -1,0 +1,50 @@
+***********ACLARACIONES DE MODIFICACIONES USADAS PARA APLICAR EL STANDAR ECMASCRIPT 6*********
+
+1. Uso de const y let
+En lugar de usar var, que tiene un alcance global o de función, se utilizan const y let para declarar variables:
+
+const:  const publicKey = '7a6efc35849d7147226b23231e122ee6'; asegura que publicKey no puede ser reasignada.
+let:  let url = ''; permite cambiar el valor de url según la lógica del código.
+
+2. Uso de async y await
+
+async: Por ejemplo, const response = await fetch(url); espera a que la respuesta de la API esté disponible.
+
+
+3. Desestructuración
+Desestructuración de objetos: Permite extraer propiedades de un objeto directamente. Por ejemplo:
+
+const { data } = await response.json();
+Esto extrae la propiedad data del objeto devuelto por response.json().
+
+Desestructuración en arreglos:
+
+const [character] = data.results;
+Esto extrae el primer elemento del arreglo data.results y lo asigna a character.
+
+4. Template Literals
+Permite insertar variables directamente en cadenas de texto usando el formato ${variable} dentro de las comillas invertidas `:
+
+Ejemplo:
+
+const url = `${baseUrl}?nameStartsWith=${query}&ts=${ts}&apikey=${publicKey}&hash=${hash}`;
+Aquí, url se construye insertando las variables directamente en la cadena.
+
+
+5. Funciones Flecha (Arrow Functions)
+Las funciones flecha (=>) permiten una sintaxis más concisa para definir funciones:
+
+Ejemplo:
+
+const fetchSuggestions = async () => {
+    .....
+};
+Esta es una forma más corta de escribir una función anónima comparada con la sintaxis tradicional.
+
+6. Métodos de Array con Arrow Functions
+Para manipular arreglos, se usan métodos como map y join junto con funciones flecha:
+
+Ejemplo:
+
+const comics = character.comics.items.map(({ name }) => name).slice(0, 5).join(", ");
+Aquí, map utiliza una función flecha para extraer name de cada objeto en items, y join convierte el arreglo de nombres en una cadena.
